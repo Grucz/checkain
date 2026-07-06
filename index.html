@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checka In</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-selector">
+                <button id="sv-btn" class="active">Svenska</button>
+                <button id="en-btn">English</button>
+            </div>
+            <h1 id="title">Checka In</h1>
+        </header>
+
+        <main>
+            <div class="question-container">
+                <p id="question" class="question">Välj kategorier nedan och klicka på "Starta" för att börja</p>
+            </div>
+            <button id="next-btn" class="btn">Starta</button>
+        </main>
+
+        <footer>
+            <div class="categories">
+                <h2 id="categories-title">Kategorier</h2>
+                <div class="category-checkboxes">
+                    <div class="category">
+                        <input type="checkbox" id="fun" checked>
+                        <label for="fun">Roligt</label>
+                    </div>
+                    <div class="category">
+                        <input type="checkbox" id="philosophical" checked>
+                        <label for="philosophical">Filosofiskt</label>
+                    </div>
+                    <div class="category">
+                        <input type="checkbox" id="personal" checked>
+                        <label for="personal">Personligt</label>
+                    </div>
+                    <div class="category">
+                        <input type="checkbox" id="get-to-know" checked>
+                        <label for="get-to-know">Lära-känna</label>
+                    </div>
+                    <div class="category">
+                        <input type="checkbox" id="work" checked>
+                        <label for="work">På jobbet</label>
+                    </div>
+                </div>
+            </div>
+            <div class="info">
+                <p id="info-text">En interaktiv incheckningssida för möten, kurser och event.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
