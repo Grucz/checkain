@@ -134,7 +134,7 @@ const questionsData = {
       "Hur lär du dig bäst?",
       "Hur hittar du motivation när det känns tungt?"
     ],
-    "Floskler": [
+    "Modeord": [
       "Vi är värderingsdrivna",
       "Vi arbetar agilt",
       "Här är det högt i tak",
@@ -327,7 +327,7 @@ const translations = {
       personal: "Personligt",
       getToKnow: "Lära-känna",
       work: "På jobbet",
-      floskler: "Floskler"
+      floskler: "Modeord"
     },
     infoText: "En interaktiv incheckningssida för möten, kurser och event.",
     startMessage: "Välj kategorier nedan och klicka på \"Starta\" för att börja",
@@ -505,7 +505,7 @@ function updateLanguage() {
   document.querySelector('label[for="get-to-know"]').textContent = t.categories.getToKnow;
   document.querySelector('label[for="work"]').textContent = t.categories.work;
 
-  // Floskler finns bara på svenska – dölj kategorin i engelska läget
+  // Modeord finns bara på svenska – dölj kategorin i engelska läget
   if (currentLanguage === 'sv') {
     flosklerCategory.style.display = '';
     document.querySelector('label[for="floskler"]').textContent = t.categories.floskler;
@@ -570,9 +570,9 @@ function getCategoryQuestions() {
   if (getToKnowCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.getToKnow]);
   if (workCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.work]);
 
-  // Floskler finns bara på svenska
+  // Modeord finns bara på svenska
   if (currentLanguage === 'sv' && flosklerCheckbox.checked) {
-    selected = selected.concat(questionsData.sv["Floskler"]);
+    selected = selected.concat(questionsData.sv["Modeord"]);
   }
 
   // Ta bort dubletter
