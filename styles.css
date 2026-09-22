@@ -235,3 +235,93 @@ h2 {
 .question {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Välj påstående själv */
+.manual-select {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.manual-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.manual-toggle:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.manual-toggle.open {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--background-color);
+}
+
+.manual-toggle-arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.manual-toggle.open .manual-toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.manual-list {
+  max-width: 700px;
+  margin: 20px auto 0;
+  max-height: 340px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.manual-group {
+  margin-bottom: 22px;
+}
+
+.manual-group:last-child {
+  margin-bottom: 0;
+}
+
+.manual-group-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  text-align: left;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.manual-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  padding: 7px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.manual-item:hover {
+  background: rgba(0, 200, 255, 0.15);
+}

@@ -318,7 +318,7 @@ const translations = {
   sv: {
     title: "Checka In",
     startBtn: "Starta",
-    nextBtn: "Nästa fråga",
+    nextBtn: "Nästa",
     categoriesTitle: "Kategorier",
     categories: {
       fun: "Roligt",
@@ -329,12 +329,13 @@ const translations = {
       floskler: "Floskler"
     },
     infoText: "En interaktiv incheckningssida för möten, kurser och event.",
-    startMessage: "Välj kategorier nedan och klicka på \"Starta\" för att börja"
+    startMessage: "Välj kategorier nedan och klicka på \"Starta\" för att börja",
+    manualSelectLabel: "Välj påstående själv"
   },
   en: {
     title: "Check In",
     startBtn: "Start",
-    nextBtn: "Next question",
+    nextBtn: "Next",
     categoriesTitle: "Categories",
     categories: {
       fun: "Fun",
@@ -344,14 +345,16 @@ const translations = {
       work: "At work"
     },
     infoText: "An interactive check-in page for meetings, courses and events.",
-    startMessage: "Select categories below and click \"Start\" to begin"
+    startMessage: "Select categories below and click \"Start\" to begin",
+    manualSelectLabel: "Choose statement yourself"
   }
 };
 
 // Variabler för applikationen
 let currentLanguage = 'sv';
-let usedQuestions = [];
-let availableQuestions = [];
+let questionQueue = [];
+let lastQuestion = null;
+let currentSignature = '';
 let isStarted = false;
 
 // DOM-element
@@ -372,6 +375,11 @@ const workCheckbox = document.getElementById('work');
 const flosklerCheckbox = document.getElementById('floskler');
 const flosklerCategory = document.getElementById('floskler-category');
 
+// Välj påstående själv
+const manualToggle = document.getElementById('manual-toggle');
+const manualToggleLabel = document.getElementById('manual-toggle-label');
+const manualList = document.getElementById('manual-list');
+
 // Initialisera applikationen
 function init() {
   updateLanguage();
@@ -387,6 +395,52 @@ function init() {
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', saveSettings);
   });
+
+  // Hopfällning av "Välj påstående själv"
+  manualToggle.addEventListener('click', toggleManualList);
+}
+
+// Öppna/stäng listan med påståenden
+function toggleManualList() {
+  const willOpen = manualList.hidden;
+  manualList.hidden = !willOpen;
+  manualToggle.classList.toggle('open', willOpen);
+  manualToggle.setAttribute('aria-expanded', String(willOpen));
+}
+
+// Bygg listan med alla påståenden grupperade per kategori (aktuellt språk)
+function buildManualList() {
+  manualList.innerHTML = '';
+  const categories = questionsData[currentLanguage];
+
+  Object.keys(categories).forEach(categoryName => {
+    const group = document.createElement('div');
+    group.className = 'manual-group';
+
+    const heading = document.createElement('h3');
+    heading.className = 'manual-group-title';
+    heading.textContent = categoryName;
+    group.appendChild(heading);
+
+    categories[categoryName].forEach(text => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'manual-item';
+      item.textContent = text;
+      item.addEventListener('click', () => selectManualQuestion(text));
+      group.appendChild(item);
+    });
+
+    manualList.appendChild(group);
+  });
+}
+
+// Visa ett valt påstående i frågefältet
+function selectManualQuestion(text) {
+  isStarted = true;
+  nextBtn.textContent = translations[currentLanguage].nextBtn;
+  lastQuestion = text;
+  displayQuestion(text);
 }
 
 // Hantera språkbyte
@@ -424,6 +478,10 @@ function updateLanguage() {
     flosklerCategory.style.display = 'none';
   }
 
+  // Uppdatera "Välj påstående själv" och bygg om listan för aktuellt språk
+  manualToggleLabel.textContent = t.manualSelectLabel;
+  buildManualList();
+
   // Om vi inte har startat, visa startmeddelande
   if (!isStarted) {
     questionElement.textContent = t.startMessage;
@@ -443,23 +501,21 @@ function handleNextButtonClick() {
 function startQuestions() {
   isStarted = true;
   nextBtn.textContent = translations[currentLanguage].nextBtn;
-  updateAvailableQuestions();
+  currentSignature = ''; // tvinga en ny blandad kö
   showNextQuestion();
 }
 
-// Uppdatera tillgängliga frågor baserat på valda kategorier
-function updateAvailableQuestions() {
-  availableQuestions = [];
-  usedQuestions = [];
-  
+// Hämta valda påståenden baserat på ikryssade kategorier
+function getSelectedQuestions() {
+  let selected = [];
+
   const categoryMap = {
     sv: {
       fun: "Roligt",
       philosophical: "Filosofiskt",
       personal: "Personligt",
       getToKnow: "Lära-känna",
-      work: "På jobbet",
-      floskler: "Floskler"
+      work: "På jobbet"
     },
     en: {
       fun: "Fun",
@@ -469,73 +525,80 @@ function updateAvailableQuestions() {
       work: "At work"
     }
   };
-  
-  // Lägg till frågor från valda kategorier
-  if (funCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].fun]);
-  }
-  
-  if (philosophicalCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].philosophical]);
-  }
-  
-  if (personalCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].personal]);
-  }
-  
-  if (getToKnowCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].getToKnow]);
-  }
-  
-  if (workCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].work]);
-  }
+  const map = categoryMap[currentLanguage];
+
+  if (funCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.fun]);
+  if (philosophicalCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.philosophical]);
+  if (personalCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.personal]);
+  if (getToKnowCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.getToKnow]);
+  if (workCheckbox.checked) selected = selected.concat(questionsData[currentLanguage][map.work]);
 
   // Floskler finns bara på svenska
   if (currentLanguage === 'sv' && flosklerCheckbox.checked) {
-    availableQuestions = availableQuestions.concat(questionsData.sv["Floskler"]);
+    selected = selected.concat(questionsData.sv["Floskler"]);
   }
 
   // Ta bort dubletter
-  availableQuestions = [...new Set(availableQuestions)];
-  
-  // Om inga kategorier är valda, visa meddelande
-  if (availableQuestions.length === 0) {
-    questionElement.textContent = currentLanguage === 'sv' 
-      ? "Välj minst en kategori för att visa frågor" 
-      : "Select at least one category to show questions";
-    return false;
-  }
-  
-  return true;
+  return [...new Set(selected)];
 }
 
-// Visa nästa slumpmässiga fråga
+// Signatur över aktuellt urval (språk + ikryssade kategorier)
+function getSelectionSignature() {
+  const flags = [
+    funCheckbox.checked, philosophicalCheckbox.checked, personalCheckbox.checked,
+    getToKnowCheckbox.checked, workCheckbox.checked, flosklerCheckbox.checked
+  ];
+  return currentLanguage + '|' + flags.join(',');
+}
+
+// Blanda en array (Fisher-Yates)
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Visa nästa fråga – varje valt påstående visas en gång innan kön blandas om
 function showNextQuestion() {
-  // Kontrollera om vi har några tillgängliga frågor
-  if (!updateAvailableQuestions()) {
+  const selected = getSelectedQuestions();
+
+  if (selected.length === 0) {
+    questionElement.textContent = currentLanguage === 'sv'
+      ? "Välj minst en kategori för att visa frågor"
+      : "Select at least one category to show questions";
+    questionQueue = [];
+    currentSignature = '';
     return;
   }
-  
-  // Om alla frågor har använts, återställ
-  if (availableQuestions.length === usedQuestions.length) {
-    usedQuestions = [];
+
+  const signature = getSelectionSignature();
+
+  // Bygg en ny blandad kö när urvalet ändrats eller när kön är tömd
+  if (signature !== currentSignature || questionQueue.length === 0) {
+    questionQueue = shuffle(selected);
+
+    // Undvik att sista påståendet i en runda blir det första i nästa
+    if (questionQueue.length > 1 && questionQueue[0] === lastQuestion) {
+      const swapIndex = 1 + Math.floor(Math.random() * (questionQueue.length - 1));
+      [questionQueue[0], questionQueue[swapIndex]] = [questionQueue[swapIndex], questionQueue[0]];
+    }
+
+    currentSignature = signature;
   }
-  
-  // Hitta en fråga som inte har använts
-  let question;
-  do {
-    const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-    question = availableQuestions[randomIndex];
-  } while (usedQuestions.includes(question));
-  
-  // Lägg till frågan i använda frågor
-  usedQuestions.push(question);
-  
-  // Visa frågan med animation
+
+  const question = questionQueue.shift();
+  lastQuestion = question;
+  displayQuestion(question);
+}
+
+// Visa en fråga i frågefältet med övergång
+function displayQuestion(text) {
   questionElement.style.opacity = 0;
   setTimeout(() => {
-    questionElement.textContent = question;
+    questionElement.textContent = text;
     questionElement.style.opacity = 1;
   }, 300);
 }
