@@ -133,6 +133,47 @@ const questionsData = {
       "Hur hanterar du kritik?",
       "Hur lär du dig bäst?",
       "Hur hittar du motivation när det känns tungt?"
+    ],
+    "Floskler": [
+      "Vi är värderingsdrivna",
+      "Vi arbetar agilt",
+      "Här är det högt i tak",
+      "Vi skapar värde",
+      "Vi tänker utanför boxen",
+      "Vi står inför ett paradigmskifte",
+      "Vi behöver bygga kultur",
+      "Vi är som en familj",
+      "Kultur äter strategi till frukost",
+      "Medarbetarna är vår viktigaste resurs",
+      "Här finns respekt för allas åsikter",
+      "Vi hör vad ni säger",
+      "Vi behöver attrahera och behålla talanger",
+      "Vi är prestigelösa",
+      "Mångfald är viktigt för oss",
+      "Vi värnar work-life balance",
+      "Vi rekryterar fördomsfritt",
+      "Vi behöver tänka inifrån och ut",
+      "I en snabbt föränderlig värld…",
+      "Vi är på en kulturresa – och den har bara börjat",
+      "Vi behöver bygga en robust organisation",
+      "Det är ingen förändring – det är en förbättring",
+      "Alle man på däck",
+      "Det nya normala",
+      "Hybridarbete är här för att stanna",
+      "Vi behöver vara disruptiva",
+      "Vi måste bli mer innovativa",
+      "Vi behöver arbeta mer strategiskt",
+      "Vi måste bryta stuprören",
+      "Vi behöver kroka arm",
+      "Vi behöver skapa samsyn",
+      "Vi behöver få till en förflyttning",
+      "Vi behöver äga frågan",
+      "Vi behöver jobba mer proaktivt",
+      "Vi behöver ha med oss hela perspektivet",
+      "Det här är ett levande dokument",
+      "Vi behöver stärka arbetsgivarvarumärket",
+      "Vi behöver säkra kompetensförsörjningen",
+      "Vi ska vara en attraktiv arbetsgivare"
     ]
   },
   en: {
@@ -284,7 +325,8 @@ const translations = {
       philosophical: "Filosofiskt",
       personal: "Personligt",
       getToKnow: "Lära-känna",
-      work: "På jobbet"
+      work: "På jobbet",
+      floskler: "Floskler"
     },
     infoText: "En interaktiv incheckningssida för möten, kurser och event.",
     startMessage: "Välj kategorier nedan och klicka på \"Starta\" för att börja"
@@ -327,6 +369,8 @@ const philosophicalCheckbox = document.getElementById('philosophical');
 const personalCheckbox = document.getElementById('personal');
 const getToKnowCheckbox = document.getElementById('get-to-know');
 const workCheckbox = document.getElementById('work');
+const flosklerCheckbox = document.getElementById('floskler');
+const flosklerCategory = document.getElementById('floskler-category');
 
 // Initialisera applikationen
 function init() {
@@ -339,7 +383,7 @@ function init() {
   nextBtn.addEventListener('click', handleNextButtonClick);
   
   // Lägg till event listeners för checkboxar
-  const checkboxes = [funCheckbox, philosophicalCheckbox, personalCheckbox, getToKnowCheckbox, workCheckbox];
+  const checkboxes = [funCheckbox, philosophicalCheckbox, personalCheckbox, getToKnowCheckbox, workCheckbox, flosklerCheckbox];
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', saveSettings);
   });
@@ -371,7 +415,15 @@ function updateLanguage() {
   document.querySelector('label[for="personal"]').textContent = t.categories.personal;
   document.querySelector('label[for="get-to-know"]').textContent = t.categories.getToKnow;
   document.querySelector('label[for="work"]').textContent = t.categories.work;
-  
+
+  // Floskler finns bara på svenska – dölj kategorin i engelska läget
+  if (currentLanguage === 'sv') {
+    flosklerCategory.style.display = '';
+    document.querySelector('label[for="floskler"]').textContent = t.categories.floskler;
+  } else {
+    flosklerCategory.style.display = 'none';
+  }
+
   // Om vi inte har startat, visa startmeddelande
   if (!isStarted) {
     questionElement.textContent = t.startMessage;
@@ -406,7 +458,8 @@ function updateAvailableQuestions() {
       philosophical: "Filosofiskt",
       personal: "Personligt",
       getToKnow: "Lära-känna",
-      work: "På jobbet"
+      work: "På jobbet",
+      floskler: "Floskler"
     },
     en: {
       fun: "Fun",
@@ -437,7 +490,12 @@ function updateAvailableQuestions() {
   if (workCheckbox.checked) {
     availableQuestions = availableQuestions.concat(questionsData[currentLanguage][categoryMap[currentLanguage].work]);
   }
-  
+
+  // Floskler finns bara på svenska
+  if (currentLanguage === 'sv' && flosklerCheckbox.checked) {
+    availableQuestions = availableQuestions.concat(questionsData.sv["Floskler"]);
+  }
+
   // Ta bort dubletter
   availableQuestions = [...new Set(availableQuestions)];
   
@@ -491,7 +549,8 @@ function saveSettings() {
       philosophical: philosophicalCheckbox.checked,
       personal: personalCheckbox.checked,
       getToKnow: getToKnowCheckbox.checked,
-      work: workCheckbox.checked
+      work: workCheckbox.checked,
+      floskler: flosklerCheckbox.checked
     }
   };
   
@@ -517,7 +576,8 @@ function loadSavedSettings() {
     personalCheckbox.checked = settings.categories.personal;
     getToKnowCheckbox.checked = settings.categories.getToKnow;
     workCheckbox.checked = settings.categories.work;
-    
+    flosklerCheckbox.checked = settings.categories.floskler !== false;
+
     updateLanguage();
   }
 }
