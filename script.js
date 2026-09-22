@@ -173,7 +173,8 @@ const questionsData = {
       "Det här är ett levande dokument",
       "Vi behöver stärka arbetsgivarvarumärket",
       "Vi behöver säkra kompetensförsörjningen",
-      "Vi ska vara en attraktiv arbetsgivare"
+      "Vi ska vara en attraktiv arbetsgivare",
+      "Lågt hängande frukter"
     ]
   },
   en: {
