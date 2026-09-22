@@ -58,10 +58,16 @@
             </div>
             <div class="manual-select">
                 <button id="manual-toggle" class="manual-toggle" aria-expanded="false">
-                    <span id="manual-toggle-label">Välj påstående själv</span>
+                    <span id="manual-toggle-label">Välj bort påståenden</span>
                     <span class="manual-toggle-arrow" aria-hidden="true">▾</span>
                 </button>
-                <div id="manual-list" class="manual-list" hidden></div>
+                <div id="manual-panel" class="manual-panel" hidden>
+                    <div class="manual-panel-head">
+                        <p id="manual-hint" class="manual-hint">Bocka ur de påståenden du inte vill ska dyka upp.</p>
+                        <button id="manual-reset" class="manual-reset">Markera alla igen</button>
+                    </div>
+                    <div id="manual-list" class="manual-list"></div>
+                </div>
             </div>
             <div class="info">
                 <p id="info-text">En interaktiv incheckningssida för möten, kurser och event.</p>
